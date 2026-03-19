@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostType AI</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --glass-bg: rgba(30, 41, 59, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(0, 0, 0, 0.3);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    body.light-mode {
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      --glass-bg: rgba(255, 255, 255, 0.95);
+      --glass-border: rgba(0, 0, 0, 0.1);
+      /* Darker border */
+      --input-bg: #ffffff;
+      /* pure white inputs */
+      --text-main: #0f172a;
+      /* darker black text */
+      --text-muted: #475569;
+      /* darker muted text */
+      --accent: #7c3aed;
+      /* slightly darker purple/violet */
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      width: 400px;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      box-sizing: border-box;
+      background-attachment: fixed;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--accent);
+      filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* Status Banner */
+    .status-banner {
+      display: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      margin-bottom: 8px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.8;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.8;
+      }
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .panel-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Typography */
+    .resume-banner {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .resume-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .label-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* Inputs */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      line-height: 1.4;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.3);
+      border-color: var(--accent);
+    }
+
+    body.light-mode input:focus,
+    body.light-mode select:focus,
+    body.light-mode textarea:focus {
+      background: white;
+    }
+
+    /* Tool Buttons inside panels */
+    .tool-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .btn-xs {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      height: 24px;
+    }
+
+    /* Toggles */
+    .toggle-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--input-bg);
+      transition: .3s;
+      border-radius: 20px;
+    }
+
+    body.light-mode .slider {
+      background-color: #e2e8f0;
+      /* darker grey for off state in light mode */
+      border: 1px solid #cbd5e1;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-muted);
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--accent);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(16px);
+      background-color: white;
+    }
+
+    /* Buttons */
+    .action-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    body.light-mode .btn-ghost {
+      background: white;
+      border-color: #cbd5e1;
+      /* slate-300 */
+      color: #475569;
+      /* slate-600 */
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-ghost:hover {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    body.light-mode .btn-ghost:hover {
+      background: #f1f5f9;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+    }
+
+
+
+    /* Tooltip */
+    [title] {
+      cursor: help;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Onboarding Overlay */
+    .onboarding-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-gradient);
+      z-index: 1000;
+      display: none;
+      /* Hidden by default */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .engine-badge {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .engine-badge:hover {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+
+    .onboarding-view {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .onboarding-view.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-main {
+      padding: 16px;
+      font-size: 1rem;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--glass-border);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin: 8px 0;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .divider:not(:empty)::before { margin-right: .5em; }
+    .divider:not(:empty)::after { margin-left: .5em; }
+
+    .btn-reset-text {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      padding: 12px;
+    }
+
+    .btn-reset-text:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .back-link {
+        color: #3b82f6;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-decoration: underline;
+        margin-top: 8px;
+        transition: opacity 0.2s;
+    }
+
+    .back-link:hover {
+        opacity: 0.8;
+    }
+
+    .provider-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        text-align: left;
+    }
+
+    .provider-option {
+        background: var(--input-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .provider-option:hover {
+        border-color: var(--accent);
+    }
+
+    .provider-option.selected {
+        border-color: var(--accent);
+        background: rgba(139, 92, 246, 0.05);
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+    }
+
+    .provider-tag {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        color: var(--accent);
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Onboarding & Connection Overlay -->
+  <div id="onboarding" class="onboarding-overlay" style="display: flex;">
+    <div class="onboarding-card">
+      
+      <!-- View 1: Initial Choice -->
+      <div id="view-initial" class="onboarding-view active">
+        <div class="brand" style="justify-content: center; margin-bottom: 8px;">
+          <svg class="brand-icon" style="width: 48px; height: 48px;" viewBox="0 0 24 24" fill="url(#ghost-grad-on)" stroke="none">
+            <defs>
+              <linearGradient id="ghost-grad-on" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"></path>
+            <circle cx="9" cy="10" r="1" fill="white"></circle>
+            <circle cx="15" cy="10" r="1" fill="white"></circle>
+          </svg>
+        </div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 4px;">GhostType AI</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Built-in AI uses <i>Gemini 2.0</i>, <i>DeepSeek R1</i>, and <i>Llama 3.3</i> (all free) to humanize your text.</p>
+
+        <button id="use-builtin" class="btn-main btn-gradient">Use Built-in AI (Free)</button>
+        
+        <div class="divider">OR</div>
+
+        <button id="use-custom" class="btn-main btn-outline">Use Custom API Key</button>
+        
+        <button id="onboarding-reset" class="btn-main btn-reset-text" style="margin-top: 12px;">Reset All Data</button>
+
+        <span id="close-onboarding" class="back-link">Wait, take me back</span>
+      </div>
+
+      <!-- View 2: Custom Key Selection -->
+      <div id="view-custom" class="onboarding-view">
+        <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 4px;">Custom Connection</h2>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Connect your preferred AI provider to enable advanced features.</p>
+        
+        <div class="provider-grid">
+            <div class="provider-option" data-provider="openrouter">
+                <span class="provider-tag">Recommended</span>
+                <span style="font-weight: 700;">OpenRouter</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Access 100+ models (Gemini, GPT-4, Llama)</span>
+                <input type="password" class="provider-key-input" placeholder="sk-or-v1-..." style="display:none; margin-top: 8px;">
+            </div>
+            <div class="provider-option" data-provider="huggingface">
+                <span class="provider-tag">Advanced</span>
+                <span style="font-weight: 700;">HuggingFace</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Self-hosted or serverless inference tokens</span>
+                <input type="password" class="provider-key-input" placeholder="hf_..." style="display:none; margin-top: 8px;">
+            </div>
+            <div class="provider-option" data-provider="textsynth">
+                <span class="provider-tag">Minimal</span>
+                <span style="font-weight: 700;">TextSynth</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Reliable Llama 2 & Mistral API endpoints</span>
+                <input type="password" class="provider-key-input" placeholder="API Key..." style="display:none; margin-top: 8px;">
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+            <button id="save-custom" class="btn-primary" style="padding: 14px;">Connect & Proceed</button>
+            <span class="back-link back-to-initial" style="margin: 0; align-self: center;">Return to options</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container">
+
+    <header>
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="url(#ghost-grad)" stroke="none">
+          <defs>
+            <linearGradient id="ghost-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"></path>
+          <circle cx="9" cy="10" r="1" fill="white"></circle>
+          <circle cx="15" cy="10" r="1" fill="white"></circle>
+        </svg>
+        <h2
+          style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          GhostType AI</h2>
+      </div>
+      <button id="open-onboarding" class="theme-btn" title="AI Connections">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div id="status-banner" class="status-banner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="status-text">Status: Ready</span>
+      <span id="engine-badge" class="engine-badge" style="margin-left: auto; font-size: 0.6rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Built-in</span>
+    </div>
+
+
+
+    <!-- Settings -->
+    <div class="glass-panel">
+      <div class="panel-title">Engine Configuration</div>
+      <div class="input-row">
+        <div>
+          <label class="label-text" for="wpm">Speed (WPM)</label>
+          <input id="wpm" type="number" value="200" min="1">
+        </div>
+        <div>
+          <label class="label-text" for="accuracy">Accuracy (%)</label>
+          <input id="accuracy" type="number" value="95" min="0" max="100">
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label class="label-text" for="delay_between">Loop Delay (ms)</label>
+        <input id="delay_between" type="number" value="1000" min="0" step="100">
+      </div>
+
+      <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center;">
+        <div class="toggle-group">
+          <label class="label-text" style="margin:0;">Typing Loop</label>
+          <label class="switch">
+            <input id="loop" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-group">
+          <label class="label-text" style="margin:0;">Light Mode</label>
+          <label class="switch">
+            <input id="theme-checkbox" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paragraphs -->
+    <div class="glass-panel">
+      <div class="panel-title">
+        Typing Content
+      </div>
+      <textarea id="para1" placeholder="Enter text..."></textarea>
+      <div class="tool-bar">
+        <button id="collect1" class="btn-ghost btn-xs">📥 Collect</button>
+
+        <button id="ai-fix1" class="btn-ghost btn-xs" style="border-color: var(--accent);">🤖 AI Fix</button>
+        <button id="clear1" class="btn-ghost btn-xs">🗑 Clear</button>
+        <span id="count1" class="label-text" style="margin: auto 0 auto auto; font-size: 0.65rem;">0 chars</span>
+      </div>
+    </div>
+
+
+
+    <div id="resume-banner" class="resume-banner" style="display: none;">
+      <div class="resume-info">
+        <span>🔄 Progress detected</span>
+        <button id="continue" class="btn-accent">Resume Typing</button>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="button-grid">
+        <button id="reset" class="btn-ghost" style="flex: 1;">Reset All Settings</button>
+      </div>
+      <div class="button-grid">
+        <button id="start" class="btn-success">Start New fresh</button>
+        <button id="stop" class="btn-danger">Stop</button>
+      </div>
+    </div>
+
+    <footer>
+      <div id="auto-save-status" style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; transition: opacity 0.5s; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.05em;">Settings automatically save</div>
+      <a href="https://github.com/Subhan-Haider" target="_blank">
+        Designed by Subhan Haider • v2.2.0 (Stable AI)
+      </a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
